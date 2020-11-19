@@ -8,6 +8,7 @@ namespace CabInvoiceGenerater
     {
         /// Declaring the object of the class RideType so as to differentiate the data attributes as time and distance.
         public RideType rideType;
+        private readonly RideRepository rideRepository;
         /// Read-Only attributes acting as constant variable.
         private readonly double MINIMUM_COST_PER_KM;
         private readonly int COST_PER_TIME;
@@ -60,7 +61,7 @@ namespace CabInvoiceGenerater
             return Math.Max(totalFare, MINIMUM_FARE);
         }
         /// <summary>
-        ///  UC-2.
+        ///  UC2&3.
         /// Calculates the average fare for multiple rides.
         /// </summary>
         /// <param name="rides">The rides.</param>
@@ -78,7 +79,7 @@ namespace CabInvoiceGenerater
                     totalFare += this.CalculateFare(ride.distance, ride.time);
                 }
                 /// Computing average fare = (total fare/ number of rides)
-                averageFare = (totalFare/rides.Length);
+                averageFare = (totalFare / rides.Length);
             }
             catch (CabInvoiceException)
             {
@@ -90,6 +91,46 @@ namespace CabInvoiceGenerater
             }
             /// Returns number of rides and the total fare.
             return new InvoiceSummary(rides.Length, totalFare, averageFare);
+        }
+        /// <summary>
+        /// UC4
+        /// Method to add the Customer info to the ride repository as a dictionary with key as UserID and value as ride history
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <param name="rides"></param>
+        public void AddRides(string userID, Ride[] rides)
+        {
+            /// Exception handling for null rides
+            /// While adding the data to the dictionary with use Id and ride history
+            try
+            {
+                /// Calling the Add ride method of Ride Repository class
+                rideRepository.AddRide(userID, rides);
+            }
+            catch (CabInvoiceException)
+            {
+                /// Returning the custom exception in case the rides are null
+                if (rides == null)
+                {
+                    throw new CabInvoiceException(CabInvoiceException.ExceptionType.NULL_RIDES, "Rides passed are null..");
+                }
+            }
+        }
+        /// <summary>
+        /// Method to return the invoice summary when passed with user ID
+        /// </summary>
+        /// <param name="userID"></param>
+        /// <returns></returns>
+        public InvoiceSummary GetInvoiceSummary(string userId)
+        {
+            try
+            {
+                return this.CalculateFare(rideRepository.GetRides(userId));
+            }
+            catch (CabInvoiceException)
+            {
+                throw new CabInvoiceException(CabInvoiceException.ExceptionType.INVALID_USER_ID, "Invalid user id");
+            }
         }
     }
 }
