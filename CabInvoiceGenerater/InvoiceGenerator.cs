@@ -61,7 +61,7 @@ namespace CabInvoiceGenerater
         }
         /// <summary>
         ///  UC-2.
-        /// Calculates the fare for multiple rides.
+        /// Calculates the average fare for multiple rides.
         /// </summary>
         /// <param name="rides">The rides.</param>
         /// <returns></returns>
@@ -69,6 +69,7 @@ namespace CabInvoiceGenerater
         public InvoiceSummary CalculateFare(Ride[] rides)
         {
             double totalFare = 0;
+            double averageFare = 0;
             try
             {
                 /// Iterating to find fare for every ride.
@@ -76,6 +77,8 @@ namespace CabInvoiceGenerater
                 {
                     totalFare += this.CalculateFare(ride.distance, ride.time);
                 }
+                /// Computing average fare = (total fare/ number of rides)
+                averageFare = (totalFare/rides.Length);
             }
             catch (CabInvoiceException)
             {
@@ -86,7 +89,7 @@ namespace CabInvoiceGenerater
                 }
             }
             /// Returns number of rides and the total fare.
-            return new InvoiceSummary(rides.Length, totalFare);
+            return new InvoiceSummary(rides.Length, totalFare, averageFare);
         }
     }
 }
