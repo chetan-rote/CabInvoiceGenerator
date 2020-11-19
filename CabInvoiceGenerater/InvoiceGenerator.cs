@@ -11,7 +11,7 @@ namespace CabInvoiceGenerater
         private readonly RideRepository rideRepository;
         /// Read-Only attributes acting as constant variable.
         private readonly double MINIMUM_COST_PER_KM;
-        private readonly int COST_PER_TIME;
+        private readonly int COST_PER_KM;
         private readonly double MINIMUM_FARE;
         /// <summary>
         /// Parameterized Constructor.
@@ -19,10 +19,30 @@ namespace CabInvoiceGenerater
         /// <param name="rideType">Type of the ride.</param>
         public InvoiceGenerator(RideType rideType)
         {
+            /// Initialising the Ride Type as Supported from the ride type class enum
             this.rideType = rideType;
-            this.MINIMUM_COST_PER_KM = 10;
-            this.COST_PER_TIME = 1;
-            this.MINIMUM_FARE = 5;
+            /// Catching the Custom Exception for the invalid ride type- Unsupported from the cab service requirements 
+            try
+            {
+                /// Initialising hte default value for the NORMAL Ride Type
+                if (rideType.Equals(RideType.NORMAL))
+                {
+                    this.MINIMUM_COST_PER_KM = 10;
+                    this.COST_PER_KM = 1;
+                    this.MINIMUM_FARE = 5;
+                }
+                /// Initialising the default value for the PREMIUM Ride Type
+                else if (rideType.Equals(RideType.PREMIUM))
+                {
+                    this.MINIMUM_COST_PER_KM = 15;
+                    this.COST_PER_KM = 2;
+                    this.MINIMUM_FARE = 20;
+                }
+            }
+            catch (CabInvoiceException)
+            {
+                throw new CabInvoiceException(CabInvoiceException.ExceptionType.INVALID_RIDE_TYPE, "The Passed Ride Type is Not Valid");
+            }
         }
         /// <summary>
         /// UC-1.
@@ -41,7 +61,7 @@ namespace CabInvoiceGenerater
         public double CalculateFare(double distance, int time)
         {
             double totalFare = 0;
-            totalFare = distance * MINIMUM_COST_PER_KM + time * COST_PER_TIME;
+            totalFare = distance * MINIMUM_COST_PER_KM + time * COST_PER_KM;
             /// Checks if the ride is null. If ride is null will throw exception
             if (rideType.Equals(null))
             {
