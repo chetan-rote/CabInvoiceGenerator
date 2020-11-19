@@ -24,6 +24,7 @@ namespace CabInvoiceGenerater
             this.MINIMUM_FARE = 5;
         }
         /// <summary>
+        /// UC-1.
         /// Method to Compute the total fare of the cab journey when passed with distance and time.
         /// </summary>
         /// <param name="distance">The distance.</param>
@@ -57,6 +58,35 @@ namespace CabInvoiceGenerater
             }
             /// Returns the max value.
             return Math.Max(totalFare, MINIMUM_FARE);
+        }
+        /// <summary>
+        ///  UC-2.
+        /// Calculates the fare for multiple rides.
+        /// </summary>
+        /// <param name="rides">The rides.</param>
+        /// <returns></returns>
+        /// <exception cref="CabInvoiceException">Rides are NULL</exception>
+        public InvoiceSummary CalculateFare(Ride[] rides)
+        {
+            double totalFare = 0;
+            try
+            {
+                /// Iterating to find fare for every ride.
+                foreach (Ride ride in rides)
+                {
+                    totalFare += this.CalculateFare(ride.distance, ride.time);
+                }
+            }
+            catch (CabInvoiceException)
+            {
+                /// Checks for the ride if it's null will throw exception.
+                if (rides == null)
+                {
+                    throw new CabInvoiceException(CabInvoiceException.ExceptionType.NULL_RIDES, "Rides are NULL");
+                }
+            }
+            /// Returns number of rides and the total fare.
+            return new InvoiceSummary(rides.Length, totalFare);
         }
     }
 }
