@@ -14,11 +14,11 @@ namespace CabInvoiceGenerater
         /// </summary>
         /// <param name="numberOfRides">The number of rides.</param>
         /// <param name="totalFare">The total fare.</param>
-        public InvoiceSummary(int numberOfRides, double totalFare)
+        public InvoiceSummary(int numberOfRides, double totalFare, double  averageFare)
         {
             this.numberOfRides = numberOfRides;
             this.totalFare = totalFare;
-            this.averageFare = this.totalFare / this.numberOfRides;
+            this.averageFare = averageFare;
         }
         /// <summary>
         /// Over riding the Equals method so as to match the value of the object references
